@@ -1,48 +1,32 @@
 #include "modAlphaCipher.h"
 
-
-bool isValid(const string& s)
+void check(const string& Text, const string& key)
 {
-    for(const auto &c:s) // цикл проходит по всему массиву и выдает сам объект этого массива
-        if (!isalpha(c) )
-            return false;
-    return true;
-    
+    try {
+        string cipherText;
+        string decryptedText;
+        if (key.empty())
+            throw cipher_error("Empty key");
+        if (stoi(key) > 0) {
+            modAlphaCipher cipher(stoi(key));
+            cipherText = cipher.coder(Text);
+            decryptedText = cipher.decoder(cipherText);
+            cout<<"key="<<key<<endl;
+            cout<<"Encrypted text: "<<cipherText<<endl;
+            cout<<"Decrypted text: "<<decryptedText<<endl;
+        } else
+            throw cipher_error(std::string("Invalid key ")+key);
+    } catch (const cipher_error & e) {
+        cerr<<"Error: "<<e.what()<<endl;
+    }
+    cout<<""<<endl;
 }
-
 
 int main(int argc, char **argv)
 {
-    int key;
-    string st;
-    unsigned operation;
-    cout<<"ВВЕДИТЕ КЛЮЧ (ЧИСЛО) : ";
-    cin>>key;
-    if (!cin.good()) {
-        clog<<"КЛЮЧ НЕ ПОДХОДИТ\n";
-        return 1;
-    }
-    cout<<"КЛЮЧ ПРИНЯТ\n";
-    modAlphaCipher cipher(key);
-    do {
-        cout<<"ВЫБЕРИТЕ ОПЕРАЦИЮ (0-ВЫХОД, 1-ЗАШИФРОВАТЬ, 2-РАСШИФРОВАТЬ): ";
-        cin>>operation;
-        if (operation > 2) {
-            cout<<"ОШИБКА В ВЫБОРЕ ОПЕРАЦИИ\n";
-        } else if (operation >0) {
-            cout<<"ВВЕДИТЕ СТРОКУ, СОСТОЯЩУЮ ИЗ ЛАТИНИЦЫ : ";
-            cin>>st;
-            if (isValid(st)) {
-                if (operation==1) {
-                    cout<<"ЗАШИФРОВАННАЯ СТРОКА: "<<cipher.coder(st)<<endl;
-                } else {
-                    cout<<"РАСШИФРОВАННАЯ СТРОКА: "<<cipher.decoder(st)<<endl;
-                }
-            } else {
-                cout<<"НЕКОРРЕКТНАЯ СТРОКА.\n";
-            }
-        }
-    } while (operation!=0);
-
-    return 0;
+    check("SPASITE","0");
+    check("SPASITE","");
+    check("S P A S I T E","66");
+    check("SPASITE","66");
+    check("123456789","66");
 }
